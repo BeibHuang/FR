@@ -1,12 +1,15 @@
 ---
-title: "个人介绍"
+title: "IAAG期末报告"
 author: "黄贝贝"
-date: "2020-06-05"
+date: "2020-06-19"
 output:
   revealjs::revealjs_presentation:
-    theme: moon
-    highlight: pygments
-    transition: slide
+    self_contained: false
+    theme: sky
+    transition: default
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
 ---
 
 ## 目录
@@ -14,11 +17,10 @@ output:
 - 自我介绍
 
 
-- 用R制作PPT的几种方式
+- COVID-19心理治理
 
-- R学习资源网站
 
-- 政府遇上互联网复习
+- 绘制简单图形
 
 ## 自我介绍
 <p><span style="text-align:right;">
@@ -34,223 +36,381 @@ output:
 ![照片](photo.jpg){height=200 width=150}
 
 
-## 兴趣爱好{data-background=#963560}
+## 兴趣爱好
 - 绘画
 - 骑行
 - 听音乐
 
+## 心理治理
+###简介
 
-## 故乡
-乌鲁木齐，通称乌市，旧称迪化，是新疆维吾尔自治区首府，国务院批复确定的中国西北地区重要的中心城市和面向中亚西亚的国际商贸中心。截至2018年，全市下辖7个区、1个县，总面积14216.3平方千米，建成区面积436平方千米，常住人口350.58万人，城镇人口261.57万人，城镇化率74.61%。
+![](pic2.jpg){width=320 height=180}
 
-![照片](timg.jpg){height=200 width=500}
+2019年底在中国湖北省省会武汉市首次发现了一种新的冠状病毒，被命名为2019-nCoV，疫情在影响经济和人们的正常秩序外，对人们的心理健康也有很大影响。这种影响直接体现在搜索引擎的搜索指数上本分析以疫情下北美和亚洲不同国家人们搜索负面情绪词的谷歌搜索指数为研究对象希望这些搜索指数能够反应人们面对疫情是的心理状态
+
+## 数据库简介
+
+Kaggle——[COVID-19 and Mental Health Search Terms](https://www.kaggle.com/luckybro/mental-health-search-term)
 
 
-## 用R制作PPT的几种方式
-1. R presentation
-2. Rmarkdown
-3. packages
+> 
+此研究目标是在发生COVID-19大流行之前和之后，Google在与心理健康相关的术语上的搜索兴趣揭示了大流行如何影响公众的关注及其对世界各地人们心理健康的影响。以全世界，加拿大，美国，意大利，伊朗，日本，韩国和英国作为人口样本。
+选择的关键词为 "mental health", "depression", "anxiety", "ocd", "insomnia", "panic attack"等。
 
-## R presentation
-格式：Rpres
+## 疫情数据
 
-```{r markdown table}
-list1<-c("建立方式快捷","语法简单","YAML中支持代码插入")
-list2<-c("对R chunk的支持不如rmarkdown","不会自动knitHTML","NULL")
-tab<-data.frame('优点' = list1,'缺点' = list2)
-knitr::kable(tab,format = "markdown",caption = "pie函数")
+Kaggle——[COVID-19 Dataset](https://www.kaggle.com/imdevskp/corona-virus-report)
+
+> 
+1.包括全球每天的确诊数、死亡数、治愈数
+
+2.自2020-01-22开始更新
+
+3.包含全球188个国家地区
+ 
+## 心理治理——现状
+
+载入所需程序包
+```{r pack,message=FALSE,warning=FALSE}
+library(magrittr)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(xts)
+library(dygraphs)
 ```
 
-## Rmarkdown--ioslides
-|优点|缺点|
-|----|----|
-|knit的速度快|支持的自定义样式少|
-||换页方式单一|
+读取所需文件
+```{r read file,message=FALSE,warning=FALSE}
+library(readxl)
+full<-read_xlsx("full.xlsx")
+ww<-read_xlsx("ww.xlsx")
+us<-read_xlsx("us.xlsx")
+cn<-read_xlsx("cn.xlsx")
+sk<-read_xlsx("sk.xlsx")
+cn19<-read_xlsx("cn19.xlsx")
 
-## Rmarkdown--slidy
-|优点|缺点|
-|----|----|
-|自定义方式比ioslides灵活|knit速度慢|
-|提供多种主题||
-
-## Rmarkdown--Beamer
-Beamer是（LaTeX ）类，用于生成演示文稿和幻灯片。在学术界很常见，添加数学公式和表达式也很有用。您可以从R创建自己的Beamer演示文稿，而无需深入了解LaTeX 。
-Beamer转换pdf很方便
-
-## packages--reveal.js
-<center>本文档使用reveal.js包制作</center>
-|优点|缺点|
-|----|----|
-|换页方式多|对CSS支持不好，很多标签无法显示|
-|自定义方式多，省去CSS||
-|字体自动居中||
-
-## packages--xaringan
-本程序包由谢益辉制作，融合了reveal.js和rmd的优点
-下图为xaringanPPT页面
+```
 
 
-![照片](6.png){height=300 width=500}
+## 确诊数排名前10的国家
+截至2020-06-16
 
-## packages--xaringan
-优点
+```{r top10,message=FALSE,warning=FALSE,echo=FALSE}
 
-- 语法简单，结合了rmd和rpres
+Date<-full$Date
+COVID_top<-full %>% filter(Date==max(Date)) %>% 
+  group_by(Country.Region) %>% summarise(Total_confirmed=sum(Confirmed)) %>% 
+  top_n(10,Total_confirmed) %>% arrange(desc(Total_confirmed))
 
-- 页面美观
-
-- 插图方便
-
-- 排版简单
-
-缺点
-
-- 文件需要联网，knit速度慢
-
-## R学习资源网站{data-background=#963560}
-教程类
-
--[W3Cschool](https://www.w3cschool.cn/r/)
-
-- [bookdown](https://www.bookdown.org/)
-
-- [清华大学的R教程](http://www.math.pku.edu.cn/teachers/lidf/docs/Rbook/html/_Rbook/index.html)
-- [Rstudio说明](https://rstudio.com)
+plot1<-ggplot(data=COVID_top
+             , aes(x=Total_confirmed,y=reorder(Country.Region,Total_confirmed))) +
+     geom_bar(stat ="identity",alpha=0.8,fill="firebrick3") +
+     geom_text(aes(label=Total_confirmed), vjust=0.5, hjust=0.9,color="black", size=3.5) +
+     labs(title = paste("累计确诊数排名前10的国家",max(full$Date)),
+          x = "累计确诊数",
+         y = "国家/地区") +
+     theme_minimal()
 
 
-## 实操类{data-background-iframe="https://rstudio.cloud/"}
-- [菜鸟教程-R在线工具](https://c.runoob.com/compile/5649)
-- [Rstudio cloud](https://rstudio.cloud/)
+ggplotly(plot1)
 
-## 问答类
-- [stackoverflow](https://stackoverflow.com/)
-- [kaggle](https://www.kaggle.com/)
+```
 
-## 用R制作几种简单图形{data-background=#963560}
+
+## 前10位国家代码
+```
+Date<-full$Date
+COVID_top<-full %>% filter(Date==max(Date)) %>% 
+  group_by(Country.Region) %>% summarise(Total_confirmed=sum(Confirmed)) %>% 
+  top_n(10,Total_confirmed) %>% arrange(desc(Total_confirmed))
+
+plot1<-ggplot(data=COVID_top
+             , aes(x=Total_confirmed,y=reorder(Country.Region,Total_confirmed))) +
+     geom_bar(stat ="identity",alpha=0.8,fill="firebrick3") +
+     geom_text(aes(label=Total_confirmed), vjust=0.5, hjust=0.9,color="black", size=3.5) +
+     labs(title = paste("累计确诊数排名前10的国家",max(full$Date)),
+          x = "累计确诊数",
+         y = "国家/地区") +
+     theme_minimal()
+
+
+ggplotly(plot1)
+
+```
+
+## 确诊数后10位的国家
+
+截止2020-06-16
+```{r bottom10,message=FALSE,warning=FALSE,echo=FALSE}
+
+COVID_bottom<-full %>% filter(Date==max(Date)) %>% 
+  group_by(Country.Region) %>% summarise(Total_confirmed=sum(Confirmed)) %>% 
+  top_n(-10,Total_confirmed) %>% arrange(desc(Total_confirmed))
+
+plot2<-ggplot(data=COVID_top
+             , aes(x=Total_confirmed,y=reorder(Country.Region,Total_confirmed))) +
+     geom_bar(stat ="identity",alpha=0.8,fill="green") +
+     geom_text(aes(label=Total_confirmed), vjust=0.5, hjust=0.9,color="black", size=3.5) +
+     labs(title = paste("累计确诊数排名后10的国家",max(full$Date)),
+          x = "累计确诊数",
+         y = "国家/地区") +
+     theme_minimal()
+
+ggplotly(plot2)
+
+
+```
+
+## 后10位代码
+
+```
+COVID_bottom<-full %>% filter(Date==max(Date)) %>% 
+  group_by(Country.Region) %>% summarise(Total_confirmed=sum(Confirmed)) %>% 
+  top_n(-10,Total_confirmed) %>% arrange(desc(Total_confirmed))
+
+plot2<-ggplot(data=COVID_top
+             , aes(x=Total_confirmed,y=reorder(Country.Region,Total_confirmed))) +
+     geom_bar(stat ="identity",alpha=0.8,fill="green") +
+     geom_text(aes(label=Total_confirmed), vjust=0.5, hjust=0.9,color="black", size=3.5) +
+     labs(title = paste("累计确诊数排名后10的国家",max(full$Date)),
+          x = "累计确诊数",
+         y = "国家/地区") +
+     theme_minimal()
+ggplotly(plot2)
+
+```
+
+[备用](bottom.html)
+
+## 选择国家
+
+选择美国、加拿大、韩国作为分析对象
+
+```{r markdodown table}
+list1<-c("美国","加拿大","韩国")
+list2<-c("322,180,000","36,290,000","50,792,000")
+list3<-c("2020-01-22","2020-01-26","2020-01-24")
+list4<-c("2,137,731","101,074","12,198")
+tab<-data.frame('国家' = list1,'人口' = list2,'第一例日期'=list3,'累计确诊'=list4)
+knitr::kable(tab,format = "markdown",caption = "国家基本状况")
+```
+
+
+## 美国疫情趋势图
+
+```{r ust,message=FALSE,warning=FALSE,echo=FALSE}
+
+COVID_us<- full %>% 
+  filter(Country.Region %in% c("US")) %>% 
+  group_by(Date) 
+us1<-xts(COVID_us$Confirmed,order.by = COVID_us$Date)
+dygraph(us1, main = "美国疫情趋势", xlab="日期", ylab="确诊数")%>%
+  dySeries("V1","US",drawPoints = TRUE)%>%
+  dyRangeSelector()
+
+  
+```
+
+## 美国相关词搜索趋势
+
+```{r ustrend,message=FALSE,warning=FALSE,echo=FALSE}
+
+usdepression<-xts(us$depression,order.by = us$week)
+
+usanxiety<-xts(us$anxiety,order.by = us$week)
+uspa<-xts(us$`panic.attack`,order.by = us$week)
+usmh<-xts(us$`mental.health`,order.by = us$week)
+usdata<-cbind(usdepression,usanxiety,uspa,usmh)
+
+dygraph(usdata,xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+
+```
+
+## 美国趋势代码
+```
+usdepression<-xts(us$depression,order.by = us$week)
+usanxiety<-xts(us$anxiety,order.by = us$week)
+usocd<-xts(us$ocd,order.by = us$week)
+usinsomnia<-xts(us$insomnia,order.by = us$week)
+uspa<-xts(us$`panic.attack`,order.by = us$week)
+usmh<-xts(us$`mental.health`,order.by = us$week)
+usdata<-cbind(usdepression,usanxiety,usocd, usinsomnia,uspa,usmh)
+
+dygraph(usdata,main = "美国相关词搜索趋势图",xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+```
+
+## 加拿大疫情趋势
+
+```{r cnt,message=FALSE,warning=FALSE,echo=FALSE}
+
+COVID_cn<- full %>% 
+  filter(Country.Region %in% c("Canada")) %>% 
+  group_by(Date) 
+cn1<-xts(COVID_cn$Confirmed,order.by = COVID_us$Date)
+dygraph(cn1, main = "加拿大疫情趋势", xlab="日期", ylab="确诊数")%>%
+  dySeries("V1","Canada",drawPoints = TRUE)%>%
+  dyRangeSelector()
+
+
+```
+
+
+## 加拿大相关词搜索趋势
+
+```{r catrend,message=FALSE,warning=FALSE,echo=FALSE}
+
+cndepression<-xts(cn$depression,order.by = cn$week)
+cnanxiety<-xts(cn$anxiety,order.by = cn$week)
+cnpa<-xts(cn$`panic.attack`,order.by = cn$week)
+cnmh<-xts(cn$`mental.health`,order.by = cn$week)
+cndata<-cbind(cndepression,cnanxiety,cnpa,cnmh)
+
+dygraph(cndata,main = "加拿大相关词搜索趋势图",xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+
+
+
+```
+
+## 加拿大趋势代码
+```
+cndepression<-xts(cn$depression,order.by = cn$week)
+cnanxiety<-xts(cn$anxiety,order.by = cn$week)
+cnpa<-xts(cn$`panic.attack`,order.by = cn$week)
+cnmh<-xts(cn$`mental.health`,order.by = cn$week)
+cndata<-cbind(cndepression,cnanxiety,cnpa,cnmh)
+
+dygraph(cndata,main = "加拿大相关词搜索趋势图",xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+
+```
+
+## 韩国疫情趋势
+
+```{r skt,message=FALSE,warning=FALSE,echo=FALSE}
+
+COVID_sk<- full %>% 
+  filter(Country.Region %in% c("South Korea")) %>% 
+  group_by(Date) 
+sk1<-xts(COVID_sk$Confirmed,order.by = COVID_sk$Date)
+dygraph(sk1, main = "韩国疫情趋势", xlab="日期", ylab="确诊数")%>%
+  dySeries("V1","South Korea",drawPoints = TRUE)%>%
+  dyRangeSelector()
+
+```
+
+## 韩国相关词搜索趋势
+
+```{r sktrend,message=FALSE,warning=FALSE,echo=FALSE}
+
+skdepression<-xts(sk$depression,order.by = sk$week)
+skanxiety<-xts(sk$anxiety,order.by = sk$week)
+skpa<-xts(sk$`panic.attack`,order.by = sk$week)
+skmh<-xts(sk$`mental.health`,order.by = sk$week)
+skdata<-cbind(skdepression,skanxiety,skpa,skmh)
+
+dygraph(skdata,main = "韩国相关词搜索趋势图",xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+
+```
+
+
+## 韩国搜索趋势代码
+```
+skdepression<-xts(sk$depression,order.by = sk$week)
+skanxiety<-xts(sk$anxiety,order.by = sk$week)
+skpa<-xts(sk$`panic.attack`,order.by = sk$week)
+skmh<-xts(sk$`mental.health`,order.by = sk$week)
+skdata<-cbind(skdepression,skanxiety,skpa,skmh)
+
+dygraph(skdata,main = "韩国相关词搜索趋势图",xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+
+```
+## 2019年加拿大的相关词搜索指数
+
+```{r lycn,message=FALSE,warning=FALSE,echo=FALSE}
+
+lydepression<-xts(cn19$depression,order.by = cn19$week)
+lyanxiety<-xts(cn19$anxiety,order.by = cn19$week)
+lypa<-xts(cn19$`panic.attack`,order.by = cn19$week)
+lymh<-xts(cn19$`mental.health`,order.by = cn19$week)
+lydata<-cbind(lydepression,lyanxiety,lypa,lymh)
+
+dygraph(lydata,main = "2019年加拿大相关词搜索趋势图",xlab = "日期",ylab = "搜索指数")%>%
+  dyRangeSelector()
+
+```
+
+## 结论
+
+![](pic3.jpg)
+
+
+
+- 通过加拿大2020和2019的数据对比可得，今年搜索负面情绪词的次数远高于去年
+
+- 通过疫情趋势图和搜索趋势图的对比可得，疫情的的发展状况似乎与人们的心理状态无必然联系
+
+- 应当注意疫情之下对人们的心理疏导
+
+
+## 绘制简单图形
 
 - 放射图
+ 
 - 饼图
 
-
 ## 放射图
+
+*需要安装networkD3*
+
 - 用read.table/read.csv读取文件
 
     > ```do<-read.table("number.txt",header=FALSE,sep="")```
-
 - 用networkD3包的simpleNetwork生成放射图
 
     > ```simpleNetwork(do)```
-
+    
 ## 示例
-```{r number}
+
+```{r number,message=FALSE,warning=FALSE}
 do<-read.table("number.txt",header = FALSE,sep = "")
 library(networkD3)
-simpleNetwork(do,linkColour = "#ff99ff",nodeColour = '#000000',zoom = TRUE,height = 420,width=560,fontSize = 15)
+simpleNetwork(do,linkColour = "#ff99ff",nodeColour = '#000000',zoom = TRUE,fontSize = 25)
 ```
 
-## 饼图
+## 饼图参数
+
 了解pie函数
 
-```pie(x, labels = names(x), radius = 0.8,main= “NULL”, col = NULL, clockwise = FALSE,
-density = NULL, angle = 45, lty = NULL, border = NULL, edges = 200, ….)```
+```
+pie(x, labels = names(x), radius = 0.8,main= “NULL”, col = NULL, clockwise = FALSE,
+density = NULL, angle = 45, lty = NULL, border = NULL, edges = 200, ….)
 
+```
 
-## 饼图参数
 各参数的内容
-```{r markdodown table}
+```{r mar}
 list1<-c("x","labels","radius","main","col")
 list2<-c("每个扇形的面积","每个扇形名称","饼图圆的半径","饼图的标题","每个扇形的颜色")
 tab<-data.frame('参数' = list1,'含义' = list2)
 knitr::kable(tab,format = "markdown",caption = "pie函数")
 ```
 
-
 ## 饼图示例
+
 ```{r pie chart}
 x <- c(10,20,30,40,50)
 label <- c("A","B", "C", "D", "E")
 pie(x,labels=label,main="example",col = rainbow(length(x)))
 ```
 
-## 政府遇上互联网{data-background=#963560}
-- 信息简史
-- 信息政策
-- 信息化与政府效能
+##谢谢观看
 
-## 阅读参考
-1.中国国家治理的特点及网络治理的特点
-
--  基础性治理
--  介入性治理
--  渗透性治理
-
-## 2.国家的大数据发展战略及未来
-- 大数据发展的影响
-
-		- 效果性影响
-		- 范式性影响
-
-			- 政治
-
-				- 选举动员的方式会发生革命性的变化
-
-			- 经济
-
-				- 成为一个新兴的重要产业，并对其他产业形成新支撑
-
-
-## 3.云计算战略对公共领域的影响
-- 云计算对于公共领域的效果性影响
-
-		- 弹性使用信息资源，节省行政成本
-		- 推动政府过程透明化和信息公开
-		- 推动公共服务智慧化和人性化
-		- 在纵向上进一步整合公共服务，这更有利于推动公共服务一体化和均等化
-		- 在横向上进一步整合公共服务，这更有利于实现无缝隙政府
-	
-##4.云计算战略对国际领域的影响
-- 云计算对军事领域的影响
-
-		- 提高行政效率
-		- 提高信息化作战能力
-		- 提高军队信息处理能力
-
-	- 云计算对国际关系的影响
-
-		- 推进多极化趋势发展
-		- 对国际关系中行为体的力量对比产生一定影响
-		- 建立国际信息体制
-		
-## 5.网络空间发展中公共治理的转变
-
-- 公共领域与网络空间的出现
-
-		
-	- 网络空间的膨胀与公共治理
-
-		
-
-	- 网络空间倒逼政府转型
-
-		
-
-
-	- 网络空间倒逼的公共安全方案
-	
-## 6.网络空间发展中的公共舆论治理
-- 中国政府回应网络舆论的对策
-
-		- 科学建立网络舆论回应机制
-		- 强化网络舆论治理的体系与制度建设
-		- 提升各级政府官员回应网络的能力与素养
-		
-## 7.网络空间发展中的公共风险治理
-- 服务性
-- 时效性
-- 开放性
-- 共享性
-
-##谢谢观看{data-background=#963560}
 Thank you for watching!
 
 
