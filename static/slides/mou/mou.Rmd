@@ -138,6 +138,7 @@ plot1<-ggplot(data=COVID_top
 ggplotly(plot1)
 
 ```
+[备用](top10.html)
 
 ## 确诊数后10位的国家
 
@@ -181,7 +182,7 @@ ggplotly(plot2)
 
 ```
 
-[备用](bottom.html)
+[备用](bottom10.html)
 
 ## 选择国家
 
