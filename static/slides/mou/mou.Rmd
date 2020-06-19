@@ -149,9 +149,9 @@ COVID_bottom<-full %>% filter(Date==max(Date)) %>%
   group_by(Country.Region) %>% summarise(Total_confirmed=sum(Confirmed)) %>% 
   top_n(-10,Total_confirmed) %>% arrange(desc(Total_confirmed))
 
-plot2<-ggplot(data=COVID_top
+plot2<-ggplot(data=COVID_bottom
              , aes(x=Total_confirmed,y=reorder(Country.Region,Total_confirmed))) +
-     geom_bar(stat ="identity",alpha=0.8,fill="green") +
+     geom_bar(stat ="identity",alpha=0.8,fill="black") +
      geom_text(aes(label=Total_confirmed), vjust=0.5, hjust=0.9,color="black", size=3.5) +
      labs(title = paste("累计确诊数排名后10的国家",max(full$Date)),
           x = "累计确诊数",
@@ -170,7 +170,7 @@ COVID_bottom<-full %>% filter(Date==max(Date)) %>%
   group_by(Country.Region) %>% summarise(Total_confirmed=sum(Confirmed)) %>% 
   top_n(-10,Total_confirmed) %>% arrange(desc(Total_confirmed))
 
-plot2<-ggplot(data=COVID_top
+plot2<-ggplot(data=COVID_bottom
              , aes(x=Total_confirmed,y=reorder(Country.Region,Total_confirmed))) +
      geom_bar(stat ="identity",alpha=0.8,fill="green") +
      geom_text(aes(label=Total_confirmed), vjust=0.5, hjust=0.9,color="black", size=3.5) +
@@ -182,7 +182,6 @@ ggplotly(plot2)
 
 ```
 
-[备用](bottom10.html)
 
 ## 选择国家
 
